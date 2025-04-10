@@ -12,7 +12,7 @@ A Model Context Protocol (MCP) server that enables seamless generation of high-q
 - Support for customizable dimensions (width and height)
 - Clear error handling for prompt validation and API issues
 - Easy integration with MCP-compatible clients
-- Optional image saving to disk in PNG format
+- Returns a direct URL to the generated image
 
 ## Installation
 
@@ -54,7 +54,7 @@ The server provides one tool: `generate_image`
 
 ### Using generate_image
 
-This tool has only one required parameter - the prompt. All other parameters are optional and use sensible defaults if not provided.
+This tool requires a `prompt`. Other parameters like `model`, `width`, `height`, `steps`, and `n` are optional and use defaults if not provided. It returns a direct URL to the generated image.
 
 #### Parameters
 
@@ -69,8 +69,8 @@ This tool has only one required parameter - the prompt. All other parameters are
   height?: number;         // Default: 768 (min: 128, max: 2048)
   steps?: number;          // Default: 1 (min: 1, max: 100)
   n?: number;             // Default: 1 (max: 4)
-  response_format?: string; // Default: "b64_json" (options: ["b64_json", "url"])
-  image_path?: string;     // Optional: Path to save the generated image as PNG
+  // response_format is always "url"
+  // image_path is removed
 }
 ```
 
@@ -87,50 +87,35 @@ Only the prompt is required:
 }
 ```
 
-#### Full Request Example with Image Saving
+#### Full Request Example
 
-Override any defaults and specify a path to save the image:
+Override defaults:
 
 ```json
 {
   "name": "generate_image",
   "arguments": {
-    "prompt": "A serene mountain landscape at sunset",
+    "prompt": "A futuristic cityscape at night",
+    "model": "dall-e-3", // Example model
     "width": 1024,
-    "height": 768,
-    "steps": 20,
-    "n": 1,
-    "response_format": "b64_json",
-    "model": "black-forest-labs/FLUX.1-schnell-Free",
-    "image_path": "/path/to/save/image.png"
+    "height": 1024,
+    "steps": 50,
+    "n": 1
   }
 }
 ```
 
 #### Response Format
 
-The response will be a JSON object containing:
+The response will be a simple text string containing the direct URL to the generated image.
 
-```json
-{
-  "id": string,        // Generation ID
-  "model": string,     // Model used
-  "object": "list",
-  "data": [
-    {
-      "timings": {
-        "inference": number  // Time taken for inference
-      },
-      "index": number,      // Image index
-      "b64_json": string    // Base64 encoded image data (if response_format is "b64_json")
-      // OR
-      "url": string        // URL to generated image (if response_format is "url")
-    }
-  ]
-}
+Example Response:
+```text
+https://image-provider.com/path/to/generated/image.png
 ```
+It is recommended that clients display this URL as a clickable link or directly render the image using Markdown, e.g., `![Generated Image](URL)`.
 
-If image_path was provided and the save was successful, the response will include confirmation of the save location.
+(Response format details updated above)
 
 ### Default Values
 
@@ -141,15 +126,15 @@ If not specified in the request, these defaults are used:
 - height: 768
 - steps: 1
 - n: 1
-- response_format: "b64_json"
+- response_format: "url" (This is now fixed and cannot be changed)
 
 ### Important Notes
 
 1. Only the `prompt` parameter is required
 2. All optional parameters use defaults if not provided
 3. When provided, parameters must meet their constraints (e.g., width/height ranges)
-4. Base64 responses can be large - use URL format for larger images
-5. When saving images, ensure the specified directory exists and is writable
+4. The server now always returns a direct URL to the image.
+5. Image saving to disk is no longer supported by this server.
 
 ## Prerequisites
 

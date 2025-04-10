@@ -18,8 +18,8 @@ interface GenerateImageArgs {
   height?: number;
   steps?: number;
   n?: number;
-  response_format?: string;
-  image_path?: string;
+  // response_format is now always 'url'
+  // image_path is removed
 }
 
 // Define the type for the base configuration
@@ -28,7 +28,7 @@ interface BaseDefaultConfig {
   height: number;
   steps: number;
   n: number;
-  response_format: string;
+  // response_format is removed as it's always 'url'
 }
 
 // Default config will be set in the constructor based on env var
@@ -54,8 +54,8 @@ class ImageGenerationServer {
       width: 1024,
       height: 768,
       steps: 1,
-      n: 1,
-      response_format: "b64_json"
+      n: 1
+      // response_format is removed
     };
 
     // Set the final default config including the model
@@ -89,7 +89,7 @@ class ImageGenerationServer {
       tools: [
         {
           name: 'generate_image',
-          description: 'Generate an image using an OpenAI compatible API',
+          description: 'Generates an image using an OpenAI compatible API and returns a direct URL to the result. It is recommended to format the output URL using Markdown for better display.',
           inputSchema: {
             type: 'object',
             properties: {
@@ -125,15 +125,7 @@ class ImageGenerationServer {
                 minimum: 1,
                 maximum: 4,
               },
-              response_format: {
-                type: 'string',
-                description: 'Response format (default: b64_json)',
-                enum: ['b64_json', 'url'],
-              },
-              image_path: {
-                type: 'string',
-                description: 'Optional path to save the generated image as PNG',
-              },
+              // response_format and image_path properties removed from schema
             },
             required: ['prompt'],
           },
@@ -168,7 +160,7 @@ class ImageGenerationServer {
   ...(request.params.arguments.height && { height: request.params.arguments.height }),
   ...(request.params.arguments.steps && { steps: request.params.arguments.steps }),
   ...(request.params.arguments.n && { n: request.params.arguments.n }),
-  ...(request.params.arguments.response_format && { response_format: request.params.arguments.response_format })
+  response_format: "url" // Force URL format
 };
 
 try {
@@ -184,34 +176,21 @@ try {
           }
         );
 
-        // If image_path is provided, save the image
-        if (request.params.arguments.image_path && response.data.data?.[0]?.b64_json) {
-          try {
-            const imageBuffer = Buffer.from(response.data.data[0].b64_json, 'base64');
-            const outputPath = path.resolve(request.params.arguments.image_path);
-            await fs.writeFile(outputPath, imageBuffer);
-            
-            return {
-              content: [
-                {
-                  type: 'text',
-                  text: `Image saved successfully to: ${outputPath}\n\n${JSON.stringify(response.data, null, 2)}`,
-                },
-              ],
-            };
-          } catch (error) {
-            throw new McpError(
-              ErrorCode.InternalError,
-              `Failed to save image: ${error instanceof Error ? error.message : String(error)}`
-            );
-          }
+        // Image saving logic is removed
+
+        // Extract the URL from the response
+        const imageUrl = response.data?.data?.[0]?.url;
+
+        if (!imageUrl) {
+           throw new McpError(ErrorCode.InternalError, 'API response did not contain an image URL.');
         }
 
+        // Return the image URL directly
         return {
           content: [
             {
               type: 'text',
-              text: JSON.stringify(response.data, null, 2),
+              text: imageUrl, // Return only the URL
             },
           ],
         };
