@@ -40,7 +40,7 @@ Add to your MCP server configuration:
       "args": ["openai-image-mcp@latest -y"],
       "env": {
         "OPENAI_API_KEY": "<YOUR_API_KEY>",
-        "API_URL": "<OPTIONAL_API_ENDPOINT_URL>" // Optional: Defaults to OpenAI standard endpoint if not provided
+        "OPENAI_API_URL": "<OPTIONAL_API_ENDPOINT_URL>" // Optional: Defaults to OpenAI standard endpoint if not provided
       }
     }
   }
@@ -153,8 +153,8 @@ If not specified in the request, these defaults are used:
 ## Prerequisites
 
 - Node.js >= 16
-- OpenAI compatible API key
-- Optional: API URL if using a non-standard endpoint (e.g., self-hosted or alternative provider). If not provided, defaults to the standard OpenAI API endpoint.
+- OpenAI compatible API key (`OPENAI_API_KEY`)
+- Optional: OpenAI API URL (`OPENAI_API_URL`) if using a non-standard endpoint (e.g., self-hosted or alternative provider). If not provided, defaults to the standard OpenAI API endpoint.
 
 ## Dependencies
 

@@ -34,13 +34,13 @@ const defaultConfig = {
 class ImageGenerationServer {
   public readonly server: Server;
   private readonly apiKey: string;
-  private readonly apiUrl: string;
+  private readonly openaiApiUrl: string;
   private readonly listToolsHandler: (request: any) => Promise<any>;
   private readonly callToolHandler: (request: any) => Promise<any>;
 
-  constructor(apiKey: string, apiUrl?: string) {
+  constructor(apiKey: string, openaiApiUrl?: string) {
     this.apiKey = apiKey;
-    this.apiUrl = apiUrl || 'https://api.openai.com/v1/images/generations'; // Default to OpenAI endpoint
+    this.openaiApiUrl = openaiApiUrl || 'https://api.openai.com/v1/images/generations'; // Default to OpenAI endpoint
 
     if (!this.apiKey) {
       throw new Error('OPENAI_API_KEY is required');
@@ -156,7 +156,7 @@ const requestBody = {
 try {
 
         const response = await axios.post(
-          this.apiUrl,
+          this.openaiApiUrl,
           requestBody,
           {
             headers: {
@@ -250,14 +250,14 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 
 // Get API key and optional URL from environment variables
 const API_KEY = process.env.OPENAI_API_KEY;
-const API_URL = process.env.API_URL; // Optional API endpoint URL
+const OPENAI_API_URL = process.env.OPENAI_API_URL; // Optional API endpoint URL
 
 if (!API_KEY) {
   throw new Error('OPENAI_API_KEY environment variable is required');
 }
 
 // Create and run server
-const server = new ImageGenerationServer(API_KEY, API_URL);
+const server = new ImageGenerationServer(API_KEY, OPENAI_API_URL);
 const transport = new StdioServerTransport();
 server.server.connect(transport).catch(console.error);
 console.error('OpenAI Image Generation MCP server running on stdio');

@@ -5,7 +5,7 @@
       "args": ["openai-image-mcp@latest -y"],
       "env": {
         "OPENAI_API_KEY": "your-openai-api-key-here",
-        "API_URL": "your-optional-api-endpoint-url"
+        "OPENAI_API_URL": "your-optional-api-endpoint-url"
       },
       "disabled": false,
       "autoApprove": []
