@@ -266,10 +266,29 @@ try {
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
-// Get API key and optional URL from environment variables
-const API_KEY = process.env.OPENAI_API_KEY;
-const OPENAI_API_URL = process.env.OPENAI_API_URL; // Optional API endpoint URL
-const DEFAULT_MODEL = process.env.DEFAULT_MODEL; // Optional default model
+// --- Argument Parsing ---
+// Helper function to parse arguments in the format "-e KEY VALUE"
+function parseCliArgs(argv: string[]): { [key: string]: string } {
+  const args = argv.slice(2); // Skip node executable and script path
+  const parsed: { [key: string]: string } = {};
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === '-e' && i + 2 < args.length) {
+      const key = args[i + 1];
+      const value = args[i + 2];
+      parsed[key] = value;
+      i += 2; // Move index past the key and value
+    }
+  }
+  return parsed;
+}
+
+const cliArgs = parseCliArgs(process.argv);
+
+// --- Configuration Loading ---
+// Prioritize command-line args, fall back to environment variables
+const API_KEY = cliArgs.OPENAI_API_KEY || process.env.OPENAI_API_KEY;
+const OPENAI_API_URL = cliArgs.OPENAI_API_URL || process.env.OPENAI_API_URL; // Optional API endpoint URL
+const DEFAULT_MODEL = cliArgs.DEFAULT_MODEL || process.env.DEFAULT_MODEL; // Optional default model
 
 if (!API_KEY) {
   throw new Error('OPENAI_API_KEY environment variable is required');
