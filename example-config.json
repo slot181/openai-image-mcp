@@ -7,7 +7,8 @@
       ],
       "env": {
         "OPENAI_API_KEY": "your-openai-api-key-here",
-        "OPENAI_API_URL": "your-optional-api-endpoint-url"
+        "OPENAI_API_URL": "your-optional-api-endpoint-url",
+        "DEFAULT_MODEL": "your-default-model-name"
       },
       "disabled": false,
       "autoApprove": []

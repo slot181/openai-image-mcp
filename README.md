@@ -40,7 +40,8 @@ Add to your MCP server configuration:
       "args": ["openai-image-mcp@latest -y"],
       "env": {
         "OPENAI_API_KEY": "<YOUR_API_KEY>",
-        "OPENAI_API_URL": "<OPTIONAL_API_ENDPOINT_URL>" // Optional: Defaults to OpenAI standard endpoint if not provided
+        "OPENAI_API_URL": "<OPTIONAL_API_ENDPOINT_URL>", // Optional: Defaults to OpenAI standard endpoint if not provided
+        "DEFAULT_MODEL": "<OPTIONAL_DEFAULT_MODEL_NAME>" // Optional: Defaults to 'black-forest-labs/FLUX.1-schnell-Free' if not provided
       }
     }
   }
@@ -155,6 +156,7 @@ If not specified in the request, these defaults are used:
 - Node.js >= 16
 - OpenAI compatible API key (`OPENAI_API_KEY`)
 - Optional: OpenAI API URL (`OPENAI_API_URL`) if using a non-standard endpoint (e.g., self-hosted or alternative provider). If not provided, defaults to the standard OpenAI API endpoint.
+- Optional: Default Model Name (`DEFAULT_MODEL`) to override the built-in default (`black-forest-labs/FLUX.1-schnell-Free`).
 
 ## Dependencies
 

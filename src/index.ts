@@ -22,29 +22,38 @@ interface GenerateImageArgs {
   image_path?: string;
 }
 
-const defaultConfig = {
-  model: "black-forest-labs/FLUX.1-schnell-Free",
-  width: 1024,
-  height: 768,
-  steps: 1,
-  n: 1,
-  response_format: "b64_json"
-};
+// Default config will be set in the constructor based on env var
 
 class ImageGenerationServer {
   public readonly server: Server;
   private readonly apiKey: string;
   private readonly openaiApiUrl: string;
+  private readonly defaultConfig: typeof baseDefaultConfig & { model: string };
   private readonly listToolsHandler: (request: any) => Promise<any>;
   private readonly callToolHandler: (request: any) => Promise<any>;
 
-  constructor(apiKey: string, openaiApiUrl?: string) {
+  constructor(apiKey: string, openaiApiUrl?: string, defaultModel?: string) {
     this.apiKey = apiKey;
     this.openaiApiUrl = openaiApiUrl || 'https://api.openai.com/v1/images/generations'; // Default to OpenAI endpoint
 
     if (!this.apiKey) {
       throw new Error('OPENAI_API_KEY is required');
     }
+
+    // Define base defaults excluding the model
+    const baseDefaultConfig = {
+      width: 1024,
+      height: 768,
+      steps: 1,
+      n: 1,
+      response_format: "b64_json"
+    };
+
+    // Set the final default config including the model
+    this.defaultConfig = {
+      ...baseDefaultConfig,
+      model: defaultModel || "black-forest-labs/FLUX.1-schnell-Free", // Use provided default or fallback
+    };
 
     this.server = new Server(
       {
@@ -81,7 +90,7 @@ class ImageGenerationServer {
               },
               model: {
                 type: 'string',
-                description: 'Model to use for generation (default: black-forest-labs/FLUX.1-schnell-Free)',
+                description: `Model to use for generation (default: ${this.defaultConfig.model})`,
               },
               width: {
                 type: 'number',
@@ -142,8 +151,8 @@ class ImageGenerationServer {
         throw new McpError(ErrorCode.InvalidParams, 'Prompt is required and must be a string');
       }
 
-const requestBody = {
-  ...defaultConfig,
+    const requestBody = {
+      ...this.defaultConfig, // Use the instance's default config
   prompt: request.params.arguments.prompt,
   ...(request.params.arguments.model && { model: request.params.arguments.model }),
   ...(request.params.arguments.width && { width: request.params.arguments.width }),
@@ -251,13 +260,14 @@ import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
 // Get API key and optional URL from environment variables
 const API_KEY = process.env.OPENAI_API_KEY;
 const OPENAI_API_URL = process.env.OPENAI_API_URL; // Optional API endpoint URL
+const DEFAULT_MODEL = process.env.DEFAULT_MODEL; // Optional default model
 
 if (!API_KEY) {
   throw new Error('OPENAI_API_KEY environment variable is required');
 }
 
 // Create and run server
-const server = new ImageGenerationServer(API_KEY, OPENAI_API_URL);
+const server = new ImageGenerationServer(API_KEY, OPENAI_API_URL, DEFAULT_MODEL);
 const transport = new StdioServerTransport();
 server.server.connect(transport).catch(console.error);
 console.error('OpenAI Image Generation MCP server running on stdio');
