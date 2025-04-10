@@ -1,10 +1,11 @@
 {
   "mcpServers": {
-    "together": {
+    "openai-image-gen": {
       "command": "npx",
-      "args": ["together-mcp@latest -y"],
+      "args": ["openai-image-mcp@latest -y"],
       "env": {
-        "TOGETHER_API_KEY": "your-api-key-here"
+        "OPENAI_API_KEY": "your-openai-api-key-here",
+        "API_URL": "your-optional-api-endpoint-url"
       },
       "disabled": false,
       "autoApprove": []

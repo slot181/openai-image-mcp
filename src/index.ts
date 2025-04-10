@@ -34,19 +34,21 @@ const defaultConfig = {
 class ImageGenerationServer {
   public readonly server: Server;
   private readonly apiKey: string;
-  private readonly API_ENDPOINT = 'https://api.together.xyz/v1/images/generations';
+  private readonly apiUrl: string;
   private readonly listToolsHandler: (request: any) => Promise<any>;
   private readonly callToolHandler: (request: any) => Promise<any>;
 
-  constructor(apiKey: string) {
+  constructor(apiKey: string, apiUrl?: string) {
     this.apiKey = apiKey;
+    this.apiUrl = apiUrl || 'https://api.openai.com/v1/images/generations'; // Default to OpenAI endpoint
+
     if (!this.apiKey) {
-      throw new Error('TOGETHER_API_KEY is required');
+      throw new Error('OPENAI_API_KEY is required');
     }
 
     this.server = new Server(
       {
-        name: 'together-image-generator',
+        name: 'openai-image-generator',
         version: '0.1.4',
       },
       {
@@ -69,7 +71,7 @@ class ImageGenerationServer {
       tools: [
         {
           name: 'generate_image',
-          description: 'Generate an image using Together AI API',
+          description: 'Generate an image using an OpenAI compatible API',
           inputSchema: {
             type: 'object',
             properties: {
@@ -154,7 +156,7 @@ const requestBody = {
 try {
 
         const response = await axios.post(
-          this.API_ENDPOINT,
+          this.apiUrl,
           requestBody,
           {
             headers: {
@@ -246,14 +248,16 @@ try {
 
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
-// Get API key from environment variable
-const API_KEY = process.env.TOGETHER_API_KEY;
+// Get API key and optional URL from environment variables
+const API_KEY = process.env.OPENAI_API_KEY;
+const API_URL = process.env.API_URL; // Optional API endpoint URL
+
 if (!API_KEY) {
-  throw new Error('TOGETHER_API_KEY environment variable is required');
+  throw new Error('OPENAI_API_KEY environment variable is required');
 }
 
 // Create and run server
-const server = new ImageGenerationServer(API_KEY);
+const server = new ImageGenerationServer(API_KEY, API_URL);
 const transport = new StdioServerTransport();
 server.server.connect(transport).catch(console.error);
-console.error('Together Image Generation MCP server running on stdio');
+console.error('OpenAI Image Generation MCP server running on stdio');

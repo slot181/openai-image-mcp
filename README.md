@@ -1,6 +1,6 @@
-# Image Generation MCP Server
+# OpenAI Image Generation MCP Server
 
-A Model Context Protocol (MCP) server that enables seamless generation of high-quality images using the Flux.1 Schnell model via Together AI. This server provides a standardized interface to specify image generation parameters.
+A Model Context Protocol (MCP) server that enables seamless generation of high-quality images using OpenAI compatible APIs. This server provides a standardized interface to specify image generation parameters.
 
 <a href="https://glama.ai/mcp/servers/y6qfizhsja">
   <img width="380" height="200" src="https://glama.ai/mcp/servers/y6qfizhsja/badge" alt="Image Generation Server MCP server" />
@@ -8,7 +8,7 @@ A Model Context Protocol (MCP) server that enables seamless generation of high-q
 
 ## Features
 
-- High-quality image generation powered by the Flux.1 Schnell model
+- High-quality image generation powered by OpenAI compatible APIs
 - Support for customizable dimensions (width and height)
 - Clear error handling for prompt validation and API issues
 - Easy integration with MCP-compatible clients
@@ -17,13 +17,13 @@ A Model Context Protocol (MCP) server that enables seamless generation of high-q
 ## Installation
 
 ```bash
-npm install together-mcp
+npm install openai-image-mcp
 ```
 
 Or run directly:
 
 ```bash
-npx together-mcp@latest
+npx openai-image-mcp@latest
 ```
 
 ### Configuration
@@ -35,11 +35,12 @@ Add to your MCP server configuration:
 ```json
 {
   "mcpServers": {
-    "together-image-gen": {
+    "openai-image-gen": {
       "command": "npx",
-      "args": ["together-mcp@latest -y"],
+      "args": ["openai-image-mcp@latest -y"],
       "env": {
-        "TOGETHER_API_KEY": "<API KEY>"
+        "OPENAI_API_KEY": "<YOUR_API_KEY>",
+        "API_URL": "<OPTIONAL_API_ENDPOINT_URL>" // Optional: Defaults to OpenAI standard endpoint if not provided
       }
     }
   }
@@ -152,11 +153,8 @@ If not specified in the request, these defaults are used:
 ## Prerequisites
 
 - Node.js >= 16
-- Together AI API key
-  1. Sign in at [api.together.xyz](https://api.together.xyz/)
-  2. Navigate to [API Keys settings](https://api.together.xyz/settings/api-keys)
-  3. Click "Create" to generate a new API key
-  4. Copy the generated key for use in your MCP configuration
+- OpenAI compatible API key
+- Optional: API URL if using a non-standard endpoint (e.g., self-hosted or alternative provider). If not provided, defaults to the standard OpenAI API endpoint.
 
 ## Dependencies
 
@@ -172,8 +170,8 @@ If not specified in the request, these defaults are used:
 Clone and build the project:
 
 ```bash
-git clone https://github.com/manascb1344/together-mcp-server
-cd together-mcp-server
+git clone https://github.com/your-username/openai-image-mcp
+cd openai-image-mcp
 npm install
 npm run build
 ```

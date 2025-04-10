@@ -1,12 +1,13 @@
 {
   "mcpServers": {
-    "together-image-gen": {
+    "openai-image-gen": {
       "command": "node",
       "args": [
         "/home/mcb76/Documents/Cline/MCP/image-gen/build/index.js"
       ],
       "env": {
-        "TOGETHER_API_KEY": "your-api-key-here"
+        "OPENAI_API_KEY": "your-openai-api-key-here",
+        "API_URL": "your-optional-api-endpoint-url"
       },
       "disabled": false,
       "autoApprove": []
