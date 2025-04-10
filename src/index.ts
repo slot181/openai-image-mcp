@@ -22,13 +22,22 @@ interface GenerateImageArgs {
   image_path?: string;
 }
 
+// Define the type for the base configuration
+interface BaseDefaultConfig {
+  width: number;
+  height: number;
+  steps: number;
+  n: number;
+  response_format: string;
+}
+
 // Default config will be set in the constructor based on env var
 
 class ImageGenerationServer {
   public readonly server: Server;
   private readonly apiKey: string;
   private readonly openaiApiUrl: string;
-  private readonly defaultConfig: typeof baseDefaultConfig & { model: string };
+  private readonly defaultConfig: BaseDefaultConfig & { model: string };
   private readonly listToolsHandler: (request: any) => Promise<any>;
   private readonly callToolHandler: (request: any) => Promise<any>;
 
@@ -40,8 +49,8 @@ class ImageGenerationServer {
       throw new Error('OPENAI_API_KEY is required');
     }
 
-    // Define base defaults excluding the model
-    const baseDefaultConfig = {
+    // Define base default values excluding the model
+    const baseDefaultConfig: BaseDefaultConfig = {
       width: 1024,
       height: 768,
       steps: 1,
